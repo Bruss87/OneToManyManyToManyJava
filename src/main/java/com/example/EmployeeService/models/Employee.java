@@ -1,6 +1,12 @@
 package com.example.EmployeeService.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="employees")
@@ -22,12 +28,23 @@ public class Employee {
     @Column(name="emp_no")
     private int empNo;
 
+    @JsonIgnoreProperties("employees")
+    @ManyToOne
+    @JoinColumn(name="department_id")
+    private Department department;
+
+    @JsonIgnoreProperties(value="employees")
+    @ManyToMany(mappedBy = "employees")
+    @OnDelete(action= OnDeleteAction.CASCADE)
+    private List <Project> projects;
 
 
-    public Employee(String firstName, String lastName, int empNo) {
+    public Employee(String firstName, String lastName, int empNo, Department department) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.empNo = empNo;
+        this.department = department;
+        this.projects = new ArrayList <>();
     }
 
     public Employee(){
@@ -64,5 +81,13 @@ public class Employee {
 
     public void setEmpNo(int empNo) {
         this.empNo = empNo;
+    }
+
+    public Department getDepartment(){
+        return department;
+    }
+
+    public void setDepartment(Department department){
+        this.department = department;
     }
 }
